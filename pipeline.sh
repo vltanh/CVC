@@ -11,7 +11,8 @@ INVOKE_DIR="$(pwd)"
 edgelist="${1:-}"
 out_root="${2:-}"
 
-merge_method="cvc"
+default_merge_method="ClusterMerger"
+merge_method="${default_merge_method}"
 run_wcc=0
 weighting_strategy=0
 threshold=0.5
@@ -35,25 +36,20 @@ usage() {
     cat <<EOF
 Usage: $0 EDGELIST OUT_ROOT [OPTIONS]
 
-Runs reusable base clusterings under OUT_ROOT/clusterings and writes consensus
-outputs under OUT_ROOT/merge.
-
 Options:
-  --merge-method METHOD       cvc/cluster-merger or medcon/pamcon (default: ${merge_method})
+  --merge-method METHOD       ClusterMerger or pamcon (default: ${default_merge_method})
   --algos METHOD ...          base clusterings to use for the consensus
   --final-algo METHOD         final CVC clustering, optionally +wcc (default: ${final_algo})
-  --weighting-strategy N      ClusterMerger weighting strategy for CVC (default: ${weighting_strategy})
-  --threshold X               ClusterMerger threshold for CVC (default: ${threshold})
-  --unweight                  unweight the CVC merged graph before final clustering (default)
-  --weighted                  keep the CVC merged graph weighted
-  --run-wcc                   run WCC after a MedCon consensus, or after non-WCC CVC
+  --weighting-strategy N      ClusterMerger weighting strategy (default: ${weighting_strategy})
+  --threshold X               ClusterMerger threshold (default: ${threshold})
+  --weighted                  keep the ClusterMerger merged graph weighted (default: not set)
+  --run-wcc                   run WCC after a pamcon consensus (default: not set)
   --merge-id ID               override the generated merge directory name
   --timeout DURATION          timeout for each stage (default: ${stage_timeout})
 
 Examples:
   $0 examples/input/dnc.csv examples/output/dnc
-  $0 examples/input/dnc.csv examples/output/dnc-medcon --merge-method medcon --algos leiden-mod leiden-cpm-0.01+wcc
-  $0 examples/input/dnc.csv examples/output/dnc --merge-method cvc --algos flow-iter leiden-mod RTRex ikc-5
+  $0 examples/input/dnc.csv examples/output/dnc --merge-method ClusterMerger --algos flow-iter leiden-mod RTRex ikc-5
 EOF
 }
 
@@ -121,10 +117,6 @@ while [[ $# -gt 0 ]]; do
             threshold="$2"
             shift 2
             ;;
-        --unweight)
-            unweight=1
-            shift
-            ;;
         --weighted)
             unweight=0
             shift
@@ -164,20 +156,18 @@ while [[ $# -gt 0 ]]; do
 done
 
 case "${merge_method}" in
-    cvc|cluster-merger|merger)
-        merge_method="cvc"
+    ClusterMerger)
         if [[ "${methods_set}" -eq 0 ]]; then
             METHODS=(flow-iter leiden-mod RTRex ikc-5)
         fi
         ;;
-    medcon|pamcon)
-        merge_method="medcon"
+    pamcon)
         if [[ "${methods_set}" -eq 0 ]]; then
             METHODS=(leiden-mod leiden-cpm-0.01+wcc)
         fi
         ;;
     *)
-        echo "Unknown merge method: ${merge_method}"
+        echo "Unknown merge method: ${merge_method}. Expected ClusterMerger or pamcon."
         usage
         exit 1
         ;;
@@ -272,7 +262,7 @@ requires_flow_iter() {
         fi
     done
 
-    if [[ "${merge_method}" == "cvc" ]]; then
+    if [[ "${merge_method}" == "ClusterMerger" ]]; then
         norm="$(normalize_method "${final_algo}")"
         base="${norm%+wcc}"
         if [[ "${base}" == "flow-iter" || "${base}" == flow-iter-* ]]; then
@@ -300,10 +290,52 @@ method_alias() {
         RTRex) echo "r" ;;
         ikc-5) echo "k" ;;
         leiden-cpm-0.01+wcc) echo "c" ;;
-        leiden-cpm-0.01) echo "cp" ;;
+        leiden-cpm-0.01) echo "c'" ;;
         infomap) echo "i" ;;
         *) sanitize_id "${method}" ;;
     esac
+}
+
+numeric_equal() {
+    local lhs=$1
+    local rhs=$2
+
+    awk -v lhs="${lhs}" -v rhs="${rhs}" '
+        function numeric(value) {
+            return value ~ /^[-+]?([0-9]+([.][0-9]*)?|[.][0-9]+)([eE][-+]?[0-9]+)?$/
+        }
+        BEGIN {
+            if (!numeric(lhs) || !numeric(rhs)) {
+                exit 1
+            }
+            diff = lhs - rhs
+            if (diff < 0) {
+                diff = -diff
+            }
+            exit(diff <= 1e-9 ? 0 : 1)
+        }
+    '
+}
+
+cluster_merger_alias() {
+    local voter_count=${#METHODS[@]}
+    local majority_threshold=$(((voter_count + 1) / 2))
+    local strategy_id
+    local threshold_id
+
+    if [[ "${weighting_strategy}" == "0" ]] && numeric_equal "${threshold}" "0.5"; then
+        echo "cvc"
+        return
+    fi
+
+    if [[ "${weighting_strategy}" == "1" ]] && numeric_equal "${threshold}" "${majority_threshold}"; then
+        echo "fvc"
+        return
+    fi
+
+    strategy_id="$(sanitize_id "${weighting_strategy}")"
+    threshold_id="$(sanitize_id "${threshold}")"
+    echo "ws${strategy_id}t${threshold_id}"
 }
 
 combo_alias() {
@@ -461,14 +493,14 @@ build_cluster_files() {
     done
 }
 
-run_medcon() {
+run_pamcon() {
     local out_dir
     local out_wcc_dir
 
     build_cluster_files
 
     if [[ -z "${merge_id}" ]]; then
-        merge_id="$(combo_alias "${METHODS[@]}")-medcon"
+        merge_id="$(combo_alias "${METHODS[@]}")-pamcon"
     fi
     out_dir="${out_root}/merge/${merge_id}"
     mkdir -p "${out_dir}"
@@ -476,7 +508,7 @@ run_medcon() {
     if ! stage_done "${out_dir}" "${out_dir}/com.csv"; then
         printf "%s\n" "${cluster_files[@]}" > "${out_dir}/clustering_list.txt"
 
-        echo "[$(timestamp)] Running MedCon into ${out_dir}..."
+        echo "[$(timestamp)] Running pamcon into ${out_dir}..."
         { timeout "${stage_timeout}" /usr/bin/time -v "${PYTHON_CMD[@]}" "${HELPER_SCRIPT_DIR}/run_pamcon.py" \
             --graph "${edgelist}" \
             --clusters "${cluster_files[@]}" \
@@ -486,7 +518,7 @@ run_medcon() {
             --stage-prefix input_cluster; } 1> "${out_dir}/output.log" 2> "${out_dir}/error.log"
 
         if [[ ! -f "${out_dir}/com.csv" ]]; then
-            echo "Error: MedCon did not produce ${out_dir}/com.csv"
+            echo "Error: pamcon did not produce ${out_dir}/com.csv"
             exit 1
         fi
         touch "${out_dir}/done"
@@ -509,15 +541,20 @@ run_cvc() {
     local final_dir
     local final_wcc_dir
     local completion_file
+    local cluster_merger_id
     local final_weighted=0
 
     build_cluster_files
 
     final_norm="$(normalize_method "${final_algo}")"
+    if [[ "${run_wcc}" -eq 1 && "${final_norm}" != *+wcc ]]; then
+        final_norm="${final_norm}+wcc"
+    fi
     final_base="${final_norm%+wcc}"
 
     if [[ -z "${merge_id}" ]]; then
-        merge_id="$(combo_alias "${METHODS[@]}")$(method_alias "${final_norm}")-cvc"
+        cluster_merger_id="$(cluster_merger_alias)"
+        merge_id="$(combo_alias "${METHODS[@]}")$(method_alias "${final_norm}")-${cluster_merger_id}"
     fi
 
     out_dir="${out_root}/merge/${merge_id}"
@@ -592,10 +629,6 @@ run_cvc() {
         stage_done "${out_dir}" "${final_dir}/com.csv" >/dev/null
     fi
 
-    if [[ "${run_wcc}" -eq 1 && "${final_norm}" != *+wcc ]]; then
-        run_wcc_stage "${final_edge}" "${final_dir}/com.csv" "${final_wcc_dir}" "${merge_id}+wcc"
-    fi
-
     stage_done "${out_dir}" "${completion_file}" >/dev/null
 }
 
@@ -611,8 +644,8 @@ fi
 echo "[$(timestamp)] Merge method: ${merge_method}"
 echo "[$(timestamp)] Methods: ${METHODS[*]}"
 
-if [[ "${merge_method}" == "medcon" ]]; then
-    run_medcon
+if [[ "${merge_method}" == "pamcon" ]]; then
+    run_pamcon
 else
     run_cvc
 fi
