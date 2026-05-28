@@ -1,8 +1,5 @@
 # Installation
 
-This repository uses local runtime binaries under `bin/`, Python wrappers, and
-external source checkouts under `externals/`.
-
 ## System Dependencies
 
 Install a C/C++ toolchain and the build tools required by the external projects:
@@ -34,21 +31,28 @@ externals/
 
 ## DSC-Flow-Iter
 
-Build only the DSC-Flow-Iter binary needed by this pipeline and copy it into the
-repository-level `bin/` directory:
+Build only the DSC-Flow-Iter binary needed by this pipeline. Pass `flow-iter`
+explicitly so the DSC build does not compile the other methods:
 
 ```bash
-cd externals/DSC/src/flow-iter
-make clean
-make
-cd ../../../..
+cd externals/DSC
+./build.sh flow-iter
+cd ../..
+```
+
+Install the wrapper-visible binary:
+
+```bash
 mkdir -p bin
-cp externals/DSC/src/flow-iter/flow-iter bin/flow-iter
+cp externals/DSC/bin/flow-iter bin/flow-iter
 chmod +x bin/flow-iter
 ```
 
-The broader `externals/DSC/build.sh` script builds additional DSC binaries that
-are not required for this pipeline.
+The pipeline uses `bin/flow-iter` by default. You can override this with:
+
+```bash
+export FLOW_ITER_BIN=/path/to/flow-iter
+```
 
 ## Python Dependencies
 
@@ -133,27 +137,4 @@ with:
 
 ```bash
 export WCC_BIN=/path/to/constrained_clustering
-```
-
-## Median Consensus
-
-Median Consensus is only needed for `--merge-method medcon`. Put the binary at
-`bin/consensus`, or provide an explicit path:
-
-```bash
-export PAMCON_BIN=/path/to/consensus
-```
-
-## Verify The Pipeline
-
-Run the bundled DSC example from the repository root:
-
-```bash
-./pipeline.sh examples/input/dnc.csv examples/output/dnc
-```
-
-The default final output is:
-
-```text
-examples/output/dnc/merge/fmrkc-cvc/final+wcc/com.csv
 ```

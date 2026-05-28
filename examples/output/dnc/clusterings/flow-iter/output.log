@@ -1,0 +1,107 @@
+Density threshold not provided. Using default value of 0.0.
+Graph path: /home/vltanh/Downloads/DSC_journal/CVC/examples/input/dnc.csv
+Output path: /home/vltanh/Downloads/DSC_journal/CVC/examples/output/dnc/clusterings/flow-iter/com.csv
+Density path: /home/vltanh/Downloads/DSC_journal/CVC/examples/output/dnc/clusterings/flow-iter/density.csv
+Density threshold: 0
+
+Processing subgraph of 906 nodes and 10429 edges.
+Densest subset density: 40.3212. Decomposed into 1 component(s).
+Removed 165 nodes. 741 nodes remaining.
+Found and removing 302 isolated vertices.
+
+Processing subgraph of 439 nodes and 1457 edges.
+Densest subset density: 13.8571. Decomposed into 1 component(s).
+Removed 35 nodes. 404 nodes remaining.
+Found and removing 1 isolated vertices.
+
+Processing subgraph of 403 nodes and 971 edges.
+Densest subset density: 9.5. Decomposed into 1 component(s).
+Removed 20 nodes. 383 nodes remaining.
+Found and removing 1 isolated vertices.
+
+Processing subgraph of 382 nodes and 759 edges.
+Densest subset density: 4.80952. Decomposed into 1 component(s).
+Removed 21 nodes. 361 nodes remaining.
+Found and removing 11 isolated vertices.
+
+Processing subgraph of 350 nodes and 561 edges.
+Densest subset density: 3.68182. Decomposed into 1 component(s).
+Removed 22 nodes. 328 nodes remaining.
+Found and removing 19 isolated vertices.
+
+Processing subgraph of 309 nodes and 412 edges.
+Densest subset density: 3.5. Decomposed into 1 component(s).
+Removed 8 nodes. 301 nodes remaining.
+
+Processing subgraph of 301 nodes and 379 edges.
+Densest subset density: 3. Decomposed into 1 component(s).
+Removed 7 nodes. 294 nodes remaining.
+
+Processing subgraph of 294 nodes and 357 edges.
+Densest subset density: 2.5. Decomposed into 1 component(s).
+Removed 18 nodes. 276 nodes remaining.
+Found and removing 3 isolated vertices.
+
+Processing subgraph of 273 nodes and 293 edges.
+Densest subset density: 2.14286. Decomposed into 1 component(s).
+Removed 7 nodes. 266 nodes remaining.
+Found and removing 1 isolated vertices.
+
+Processing subgraph of 265 nodes and 269 edges.
+Densest subset density: 2. Decomposed into 3 component(s).
+Removed 15 nodes. 250 nodes remaining.
+
+Processing subgraph of 250 nodes and 238 edges.
+Densest subset density: 1.83333. Decomposed into 1 component(s).
+Removed 6 nodes. 244 nodes remaining.
+
+Processing subgraph of 244 nodes and 225 edges.
+Densest subset density: 1.70588. Decomposed into 1 component(s).
+Removed 17 nodes. 227 nodes remaining.
+Found and removing 15 isolated vertices.
+
+Processing subgraph of 212 nodes and 172 edges.
+Densest subset density: 1.5. Decomposed into 2 component(s).
+Removed 8 nodes. 204 nodes remaining.
+
+Processing subgraph of 204 nodes and 160 edges.
+Densest subset density: 1.4. Decomposed into 1 component(s).
+Removed 15 nodes. 189 nodes remaining.
+Found and removing 11 isolated vertices.
+
+Processing subgraph of 178 nodes and 124 edges.
+Densest subset density: 1.28571. Decomposed into 1 component(s).
+Removed 7 nodes. 171 nodes remaining.
+
+Processing subgraph of 171 nodes and 114 edges.
+Densest subset density: 1.14286. Decomposed into 1 component(s).
+Removed 7 nodes. 164 nodes remaining.
+
+Processing subgraph of 164 nodes and 105 edges.
+Densest subset density: 1. Decomposed into 6 component(s).
+Removed 22 nodes. 142 nodes remaining.
+
+Processing subgraph of 142 nodes and 83 edges.
+Densest subset density: 0.916667. Decomposed into 1 component(s).
+Removed 12 nodes. 130 nodes remaining.
+
+Processing subgraph of 130 nodes and 72 edges.
+Densest subset density: 0.8. Decomposed into 1 component(s).
+Removed 5 nodes. 125 nodes remaining.
+
+Processing subgraph of 125 nodes and 68 edges.
+Densest subset density: 0.75. Decomposed into 2 component(s).
+Removed 8 nodes. 117 nodes remaining.
+
+Processing subgraph of 117 nodes and 62 edges.
+Densest subset density: 0.666667. Decomposed into 7 component(s).
+Removed 21 nodes. 96 nodes remaining.
+
+Processing subgraph of 96 nodes and 48 edges.
+Densest subset density: 0.5. Decomposed into 48 component(s).
+Removed 96 nodes. 0 nodes remaining.
+
+Removed 364 singleton clusters (set to -1) before writing.
+[TIME] Writing final assignments: 0 ms
+[TIME] Writing final density vector: 0 ms
+[TIME] Total execution: 16 ms

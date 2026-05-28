@@ -1,0 +1,44 @@
+Reading edgelist from /home/vltanh/Downloads/DSC_journal/CVC/examples/input/dnc.csv...
+not weighted
+906
+[TIME] Loading network: 0.009966890997020528
+k value 74 nbr core members 75
+adding cluster length 75
+nbr components: 1 ,  nbr components with more than 100 nodes: 0
+nodes left in graph:  831
+k value 38 nbr core members 66
+adding cluster length 66
+nbr components: 1 ,  nbr components with more than 100 nodes: 0
+nodes left in graph:  765
+k value 24 nbr core members 25
+adding cluster length 25
+nbr components: 1 ,  nbr components with more than 100 nodes: 0
+nodes left in graph:  740
+k value 19 nbr core members 20
+adding cluster length 20
+nbr components: 1 ,  nbr components with more than 100 nodes: 0
+nodes left in graph:  720
+k value 9 nbr core members 20
+adding cluster length 10
+adding cluster length 10
+nbr components: 2 ,  nbr components with more than 100 nodes: 0
+nodes left in graph:  700
+k value 8 nbr core members 18
+adding cluster length 18
+nbr components: 1 ,  nbr components with more than 100 nodes: 0
+nodes left in graph:  682
+k value 7 nbr core members 8
+adding cluster length 8
+nbr components: 1 ,  nbr components with more than 100 nodes: 0
+nodes left in graph:  674
+k value 6 nbr core members 31
+adding cluster length 31
+nbr components: 1 ,  nbr components with more than 100 nodes: 0
+nodes left in graph:  643
+k value 4 nbr core members 44
+nbr of clusters which were rejected since they were not k-valid :  0
+nbr of clusters which were rejected since they were not modular :  0
+[TIME] Running IKC algorithm: 0.00915987600455992
+Removed 643 singleton clusters.
+Saved 9 valid communities to /home/vltanh/Downloads/DSC_journal/CVC/examples/output/dnc/clusterings/ikc-5/com.csv
+[TIME] Saving results: 0.0002606429916340858

@@ -1,0 +1,4 @@
+/home/vltanh/Downloads/DSC_journal/CVC/examples/output/dnc/clusterings/flow-iter/com.csv
+/home/vltanh/Downloads/DSC_journal/CVC/examples/output/dnc/clusterings/leiden-mod/com.csv
+/home/vltanh/Downloads/DSC_journal/CVC/examples/output/dnc/clusterings/RTRex/com.csv
+/home/vltanh/Downloads/DSC_journal/CVC/examples/output/dnc/clusterings/ikc-5/com.csv

@@ -1,0 +1,6 @@
+2026-05-27 21:02:59,395 - INFO - Reading edgelist from /home/vltanh/Downloads/DSC_journal/CVC/examples/input/dnc.csv...
+2026-05-27 21:02:59,404 - INFO - [TIME] Loading network: 0.009966890997020528
+2026-05-27 21:02:59,414 - INFO - [TIME] Running IKC algorithm: 0.00915987600455992
+2026-05-27 21:02:59,414 - INFO - Removed 643 singleton clusters.
+2026-05-27 21:02:59,414 - INFO - Saved 9 valid communities to /home/vltanh/Downloads/DSC_journal/CVC/examples/output/dnc/clusterings/ikc-5/com.csv
+2026-05-27 21:02:59,414 - INFO - [TIME] Saving results: 0.0002606429916340858

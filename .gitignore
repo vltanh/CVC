@@ -1,7 +1,5 @@
 # Local build and run outputs
 bin/
-output/
-examples/output/
 
 # Python
 __pycache__/

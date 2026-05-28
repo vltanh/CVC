@@ -10,7 +10,6 @@ INVOKE_DIR="$(pwd)"
 
 edgelist="${1:-}"
 out_root="${2:-}"
-dsc_root="${DSC_ROOT:-}"
 
 merge_method="cvc"
 run_wcc=0
@@ -22,6 +21,7 @@ merge_id=""
 stage_timeout="${PIPELINE_TIMEOUT:-5d}"
 methods_set=0
 PYTHON_CMD=("${PYTHON:-python}")
+flow_iter_bin="${FLOW_ITER_BIN:-${CVC_ROOT}/bin/flow-iter}"
 cluster_merger_bin="${CLUSTER_MERGER_BIN:-${CVC_ROOT}/bin/cluster_merger}"
 rtrex_bin="${RTREX_BIN:-${CVC_ROOT}/bin/RTRex}"
 wcc_bin="${WCC_BIN:-}"
@@ -49,8 +49,6 @@ Options:
   --run-wcc                   run WCC after a MedCon consensus, or after non-WCC CVC
   --merge-id ID               override the generated merge directory name
   --timeout DURATION          timeout for each stage (default: ${stage_timeout})
-  --dsc-root DIR              DSC methods checkout containing bin/flow-iter
-                              (default: repository root when bin/flow-iter exists)
 
 Examples:
   $0 examples/input/dnc.csv examples/output/dnc
@@ -153,15 +151,6 @@ while [[ $# -gt 0 ]]; do
             stage_timeout="$2"
             shift 2
             ;;
-        --dsc-root)
-            if [[ $# -lt 2 || "$2" == --* ]]; then
-                echo "Missing value for --dsc-root"
-                usage
-                exit 1
-            fi
-            dsc_root="$2"
-            shift 2
-            ;;
         --help|-h)
             usage
             exit 0
@@ -204,21 +193,7 @@ resolve_path() {
 
 edgelist="$(resolve_path "${edgelist}")"
 out_root="$(resolve_path "${out_root}")"
-
-if [[ -z "${dsc_root}" ]]; then
-    if [[ -x "${CVC_ROOT}/bin/flow-iter" ]]; then
-        dsc_root="${CVC_ROOT}"
-    elif [[ -f "${CVC_ROOT}/externals/DSC/build.sh" && -d "${CVC_ROOT}/externals/DSC/src/flow" ]]; then
-        dsc_root="$(cd "${CVC_ROOT}/externals/DSC" && pwd)"
-    elif [[ -f "${INVOKE_DIR}/build.sh" && -d "${INVOKE_DIR}/src/flow" ]]; then
-        dsc_root="$(cd "${INVOKE_DIR}" && pwd)"
-    else
-        echo "Could not determine DSC methods root. Pass --dsc-root DIR or set DSC_ROOT." >&2
-        exit 1
-    fi
-else
-    dsc_root="$(cd "${dsc_root}" && pwd)"
-fi
+flow_iter_bin="$(resolve_path "${flow_iter_bin}")"
 
 if [[ ! -x "${cluster_merger_bin}" && -x "${CVC_ROOT}/externals/ClusterMerger/cluster_merger" ]]; then
     cluster_merger_bin="${CVC_ROOT}/externals/ClusterMerger/cluster_merger"
@@ -282,6 +257,30 @@ normalize_method() {
         rtrex) echo "RTRex" ;;
         *) echo "${method}" ;;
     esac
+}
+
+requires_flow_iter() {
+    local method
+    local norm
+    local base
+
+    for method in "${METHODS[@]}"; do
+        norm="$(normalize_method "${method}")"
+        base="${norm%+wcc}"
+        if [[ "${base}" == "flow-iter" || "${base}" == flow-iter-* ]]; then
+            return 0
+        fi
+    done
+
+    if [[ "${merge_method}" == "cvc" ]]; then
+        norm="$(normalize_method "${final_algo}")"
+        base="${norm%+wcc}"
+        if [[ "${base}" == "flow-iter" || "${base}" == flow-iter-* ]]; then
+            return 0
+        fi
+    fi
+
+    return 1
 }
 
 sanitize_id() {
@@ -353,11 +352,11 @@ run_plain_clustering() {
 
     case "${method}" in
         flow-iter)
-            command=("${dsc_root}/bin/flow-iter" "${input_edge}" "${out_dir}/com.csv" "${out_dir}/density.csv")
+            command=("${flow_iter_bin}" "${input_edge}" "${out_dir}/com.csv" "${out_dir}/density.csv")
             ;;
         flow-iter-*)
             flow_threshold="${method#flow-iter-}"
-            command=("${dsc_root}/bin/flow-iter" "${input_edge}" "${out_dir}/com.csv" "${out_dir}/density.csv" "${flow_threshold}")
+            command=("${flow_iter_bin}" "${input_edge}" "${out_dir}/com.csv" "${out_dir}/density.csv" "${flow_threshold}")
             ;;
         leiden-mod)
             command=("${PYTHON_CMD[@]}" "${METHOD_SCRIPT_DIR}/run_leiden.py" "${weight_args[@]}" --edgelist "${input_edge}" --output-directory "${out_dir}" --model mod)
@@ -601,7 +600,14 @@ run_cvc() {
 }
 
 echo "[$(timestamp)] Pipeline root: ${out_root}"
-echo "[$(timestamp)] DSC methods root: ${dsc_root}"
+if requires_flow_iter; then
+    if [[ ! -x "${flow_iter_bin}" ]]; then
+        echo "Error: flow-iter binary not found or not executable: ${flow_iter_bin}" >&2
+        echo "Build/copy it to bin/flow-iter." >&2
+        exit 1
+    fi
+    echo "[$(timestamp)] Flow-Iter binary: ${flow_iter_bin}"
+fi
 echo "[$(timestamp)] Merge method: ${merge_method}"
 echo "[$(timestamp)] Methods: ${METHODS[*]}"
 
