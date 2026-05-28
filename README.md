@@ -32,8 +32,7 @@ copied into `bin/` and used from there by default.
 
 ## Installation
 
-See [INSTALL.md](INSTALL.md) for submodule, build, Python dependency, and
-optional external binary setup.
+See [INSTALL.md](INSTALL.md).
 
 ## Running The Pipeline
 
