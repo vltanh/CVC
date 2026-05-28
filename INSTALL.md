@@ -53,9 +53,6 @@ Install the Python packages used by the wrapper scripts:
 pip install click pandas scipy numpy python-igraph leidenalg networkit infomap
 ```
 
-The optional SBM wrapper also requires `graph-tool`, which is usually installed
-through conda or the system package manager rather than pip.
-
 ## Optional External Binaries
 
 The default CVC pipeline also needs RTRex and WCC. Put the binaries in:

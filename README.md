@@ -15,7 +15,7 @@ pipelines/
   cvc_pipeline.sh
 pipeline.sh       # top-level entry point
 scripts/
-  methods/         # wrappers for Leiden, IKC, RTRex, Infomap, SBM
+  methods/         # wrappers for Leiden, IKC, RTRex, Infomap
   run_merger.py
   run_pamcon.py
   unweight.py
