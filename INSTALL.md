@@ -19,7 +19,7 @@ manager.
 After cloning the repository, initialize the external dependencies:
 
 ```bash
-git submodule update --init --recursive
+git submodule update --init
 ```
 
 The external projects are checked out under:
