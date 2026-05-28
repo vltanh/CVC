@@ -9,7 +9,24 @@ import pandas as pd
 
 
 def load_network(edgelist_fn):
-    g = gt.load_graph_from_csv(edgelist_fn, csv_options={"delimiter": "\t"})
+    df = pd.read_csv(edgelist_fn)
+    if "source" not in df.columns or "target" not in df.columns:
+        raise ValueError("Edge list must be a CSV file with source,target headers.")
+
+    g = gt.Graph(directed=False)
+    name = g.new_vertex_property("string")
+    vertex_by_id = {}
+
+    nodes = pd.unique(df[["source", "target"]].values.ravel("K"))
+    for node in nodes:
+        vertex = g.add_vertex()
+        vertex_by_id[node] = vertex
+        name[vertex] = str(node)
+
+    g.vp.name = name
+    for row in df.itertuples(index=False):
+        g.add_edge(vertex_by_id[row.source], vertex_by_id[row.target])
+
     gt.remove_parallel_edges(g)
     gt.remove_self_loops(g)
     return g
@@ -33,6 +50,7 @@ def parse_args():
         "--method",
         type=str,
         choices=["dc", "ndc", "nested_dc", "nested_ndc", "pp"],
+        required=True,
         help="Method to use for model selection",
     )
     return parser.parse_args()
