@@ -22,8 +22,8 @@ merge_id=""
 stage_timeout="${PIPELINE_TIMEOUT:-5d}"
 methods_set=0
 PYTHON_CMD=("${PYTHON:-python}")
-cluster_merger_bin="${CLUSTER_MERGER_BIN:-${CVC_ROOT}/externals/ClusterMerger/cluster_merger}"
-rtrex_bin="${RTREX_BIN:-${CVC_ROOT}/externals/amazon-RTRExtractor/RTRex/clustering/RTRex}"
+cluster_merger_bin="${CLUSTER_MERGER_BIN:-${CVC_ROOT}/bin/cluster_merger}"
+rtrex_bin="${RTREX_BIN:-${CVC_ROOT}/bin/RTRex}"
 wcc_bin="${WCC_BIN:-}"
 pamcon_bin="${PAMCON_BIN:-${CVC_ROOT}/bin/consensus}"
 
@@ -50,12 +50,12 @@ Options:
   --merge-id ID               override the generated merge directory name
   --timeout DURATION          timeout for each stage (default: ${stage_timeout})
   --dsc-root DIR              DSC methods checkout containing bin/flow-iter
-                              (default: externals/DSC when initialized)
+                              (default: repository root when bin/flow-iter exists)
 
 Examples:
-  $0 externals/DSC/examples/input/dnc.csv output/dnc
-  $0 data/empirical_networks/dnc.csv data/cvc/dnc --merge-method medcon --algos leiden-mod leiden-cpm-0.01+wcc
-  $0 data/empirical_networks/dnc.csv data/cvc/dnc --merge-method cvc --algos flow-iter leiden-mod RTRex ikc-5
+  $0 examples/input/dnc.csv examples/output/dnc
+  $0 examples/input/dnc.csv examples/output/dnc-medcon --merge-method medcon --algos leiden-mod leiden-cpm-0.01+wcc
+  $0 examples/input/dnc.csv examples/output/dnc --merge-method cvc --algos flow-iter leiden-mod RTRex ikc-5
 EOF
 }
 
@@ -206,7 +206,9 @@ edgelist="$(resolve_path "${edgelist}")"
 out_root="$(resolve_path "${out_root}")"
 
 if [[ -z "${dsc_root}" ]]; then
-    if [[ -f "${CVC_ROOT}/externals/DSC/build.sh" && -d "${CVC_ROOT}/externals/DSC/src/flow" ]]; then
+    if [[ -x "${CVC_ROOT}/bin/flow-iter" ]]; then
+        dsc_root="${CVC_ROOT}"
+    elif [[ -f "${CVC_ROOT}/externals/DSC/build.sh" && -d "${CVC_ROOT}/externals/DSC/src/flow" ]]; then
         dsc_root="$(cd "${CVC_ROOT}/externals/DSC" && pwd)"
     elif [[ -f "${INVOKE_DIR}/build.sh" && -d "${INVOKE_DIR}/src/flow" ]]; then
         dsc_root="$(cd "${INVOKE_DIR}" && pwd)"
@@ -218,12 +220,20 @@ else
     dsc_root="$(cd "${dsc_root}" && pwd)"
 fi
 
-if [[ ! -x "${cluster_merger_bin}" && -x "${CVC_ROOT}/externals/ClusterMerger/build/bin/cluster_merger" ]]; then
+if [[ ! -x "${cluster_merger_bin}" && -x "${CVC_ROOT}/externals/ClusterMerger/cluster_merger" ]]; then
+    cluster_merger_bin="${CVC_ROOT}/externals/ClusterMerger/cluster_merger"
+elif [[ ! -x "${cluster_merger_bin}" && -x "${CVC_ROOT}/externals/ClusterMerger/build/bin/cluster_merger" ]]; then
     cluster_merger_bin="${CVC_ROOT}/externals/ClusterMerger/build/bin/cluster_merger"
 fi
 
+if [[ ! -x "${rtrex_bin}" && -x "${CVC_ROOT}/externals/amazon-RTRExtractor/RTRex/clustering/RTRex" ]]; then
+    rtrex_bin="${CVC_ROOT}/externals/amazon-RTRExtractor/RTRex/clustering/RTRex"
+fi
+
 if [[ -z "${wcc_bin}" ]]; then
-    if [[ -x "${CVC_ROOT}/externals/constrained-clustering/build/bin/constrained_clustering" ]]; then
+    if [[ -x "${CVC_ROOT}/bin/constrained_clustering" ]]; then
+        wcc_bin="${CVC_ROOT}/bin/constrained_clustering"
+    elif [[ -x "${CVC_ROOT}/externals/constrained-clustering/build/bin/constrained_clustering" ]]; then
         wcc_bin="${CVC_ROOT}/externals/constrained-clustering/build/bin/constrained_clustering"
     elif [[ -x "${CVC_ROOT}/externals/constrained-clustering/constrained_clustering" ]]; then
         wcc_bin="${CVC_ROOT}/externals/constrained-clustering/constrained_clustering"

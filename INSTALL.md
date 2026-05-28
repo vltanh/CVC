@@ -1,7 +1,7 @@
 # Installation
 
-This repository uses DSC binaries from `externals/DSC`, Python wrappers, and
-external tools stored under `externals/`.
+This repository uses local runtime binaries under `bin/`, Python wrappers, and
+external source checkouts under `externals/`.
 
 ## System Dependencies
 
@@ -34,15 +34,17 @@ externals/
 
 ## DSC Methods
 
-Build the DSC binaries from the repository root:
+Build the DSC binaries and copy them into the repository-level `bin/` directory:
 
 ```bash
 cd externals/DSC
 bash build.sh
 cd ../..
+mkdir -p bin
+cp externals/DSC/bin/* bin/
 ```
 
-This writes the DSC executables under `externals/DSC/bin/`.
+The pipeline uses `bin/flow-iter` by default for DSC-Flow-Iter.
 
 ## Python Dependencies
 
@@ -74,8 +76,15 @@ make
 cd ../../..
 ```
 
-The pipeline uses `externals/amazon-RTRExtractor/RTRex/clustering/RTRex`
-directly. You can override this with:
+Install the wrapper-visible binary:
+
+```bash
+mkdir -p bin
+cp externals/amazon-RTRExtractor/RTRex/clustering/RTRex bin/RTRex
+chmod +x bin/RTRex
+```
+
+The pipeline uses `bin/RTRex` by default. You can override this with:
 
 ```bash
 export RTREX_BIN=/path/to/RTRex
@@ -90,10 +99,16 @@ cd externals/ClusterMerger
 ./setup.sh
 ./easy_build_and_compile.sh
 cd ../..
+mkdir -p bin
+cp externals/ClusterMerger/cluster_merger bin/cluster_merger
+chmod +x bin/cluster_merger
 ```
 
-The pipeline uses `externals/ClusterMerger/cluster_merger` directly, then falls
-back to `externals/ClusterMerger/build/bin/cluster_merger`.
+The pipeline uses `bin/cluster_merger` by default. You can override this with:
+
+```bash
+export CLUSTER_MERGER_BIN=/path/to/cluster_merger
+```
 
 ## Post-Processing
 
@@ -104,11 +119,17 @@ cd externals/constrained-clustering
 ./setup.sh
 ./easy_build_and_compile.sh
 cd ../..
+mkdir -p bin
+cp externals/constrained-clustering/build/bin/constrained_clustering bin/constrained_clustering
+chmod +x bin/constrained_clustering
 ```
 
-The pipeline uses
-`externals/constrained-clustering/build/bin/constrained_clustering` directly,
-then falls back to `externals/constrained-clustering/constrained_clustering`.
+The pipeline uses `bin/constrained_clustering` by default. You can override this
+with:
+
+```bash
+export WCC_BIN=/path/to/constrained_clustering
+```
 
 ## Median Consensus
 
@@ -124,11 +145,11 @@ export PAMCON_BIN=/path/to/consensus
 Run the bundled DSC example from the repository root:
 
 ```bash
-./pipeline.sh externals/DSC/examples/input/dnc.csv output/dnc
+./pipeline.sh examples/input/dnc.csv examples/output/dnc
 ```
 
 The default final output is:
 
 ```text
-output/dnc/merge/fmrkc-cvc/final+wcc/com.csv
+examples/output/dnc/merge/fmrkc-cvc/final+wcc/com.csv
 ```

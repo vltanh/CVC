@@ -76,7 +76,7 @@ start = time.perf_counter()
 binary_path = Path(
     os.environ.get(
         "RTREX_BIN",
-        cvc_root / "externals" / "amazon-RTRExtractor" / "RTRex" / "clustering" / "RTRex",
+        cvc_root / "bin" / "RTRex",
     )
 ).resolve()
 output_basename = "com"

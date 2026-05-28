@@ -2,8 +2,8 @@
 
 This repository contains the full Constrained Voting Consensus (CVC) pipeline
 from the journal manuscript. It owns the orchestration scripts for running base
-clusterings, building a consensus network with ClusterMerger, optionally running
-Median Consensus, and applying the final Leiden-CPM(0.01)+WCC step.
+clusterings (DSC-Flow-Iter, Leiden-Mod, RTRex, and IKC(5)), building a consensus
+network with ClusterMerger, and applying the final Leiden-CPM(0.01)+WCC step.
 
 ## Repository Structure
 
@@ -11,8 +11,12 @@ Median Consensus, and applying the final Leiden-CPM(0.01)+WCC step.
 externals/
   DSC/             # DSC method binaries, including DSC-Flow-Iter
   ClusterMerger/   # consensus-network construction
-  amazon-RTRExtractor/
-  constrained-clustering/
+  amazon-RTRExtractor/ # RTRex method binaries
+  constrained-clustering/ # Leiden-CPM(0.01)+WCC method binaries
+bin/              # local runtime binaries, ignored by git
+examples/
+  input/           # real-network edge lists
+  output/          # generated outputs, ignored by git
 pipelines/
   cvc_pipeline.sh
 pipeline.sh       # top-level entry point
@@ -23,9 +27,8 @@ scripts/
   unweight.py
 ```
 
-All method dependencies live under this repository's `externals/` directory.
-DSC and ClusterMerger do not own these CVC-only dependencies. Median Consensus
-is supplied through `bin/` or `PAMCON_BIN` when using `--merge-method medcon`.
+External source dependencies live under `externals/`. Runtime executables are
+copied into `bin/` and used from there by default.
 
 ## Installation
 
@@ -37,7 +40,7 @@ optional external binary setup.
 Default CVC pipeline:
 
 ```bash
-./pipeline.sh externals/DSC/examples/input/dnc.csv output/dnc
+./pipeline.sh examples/input/dnc.csv examples/output/dnc
 ```
 
 By default, the pipeline uses DSC-Flow-Iter, Leiden-Mod, RTRex, and IKC(5) as
@@ -48,13 +51,13 @@ Leiden-CPM(0.01)+WCC.
 The final default output is:
 
 ```text
-output/dnc/merge/fmrkc-cvc/final+wcc/com.csv
+examples/output/dnc/merge/fmrkc-cvc/final+wcc/com.csv
 ```
 
 Median Consensus mode:
 
 ```bash
-./pipeline.sh externals/DSC/examples/input/dnc.csv output/dnc-medcon \
+./pipeline.sh examples/input/dnc.csv examples/output/dnc-medcon \
   --merge-method medcon \
   --algos leiden-mod leiden-cpm-0.01+wcc
 ```

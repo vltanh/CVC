@@ -43,7 +43,7 @@ def main(
 ):
     cvc_root = Path(__file__).resolve().parents[1]
     cluster_merger_bin = os.environ.get(
-        "CLUSTER_MERGER_BIN", cvc_root / "externals" / "ClusterMerger" / "cluster_merger"
+        "CLUSTER_MERGER_BIN", cvc_root / "bin" / "cluster_merger"
     )
 
     clustering_list = os.path.join(output_prefix, "clustering_list.txt")
