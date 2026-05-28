@@ -11,6 +11,8 @@ Median Consensus, and applying the final Leiden-CPM(0.01)+WCC step.
 externals/
   DSC/             # DSC method binaries, including DSC-Flow-Iter
   ClusterMerger/   # consensus-network construction
+  amazon-RTRExtractor/
+  constrained-clustering/
 pipelines/
   cvc_pipeline.sh
 pipeline.sh       # top-level entry point
@@ -21,9 +23,9 @@ scripts/
   unweight.py
 ```
 
-Only `DSC` and `ClusterMerger` are submodules. Other external binaries, such as
-RTRex, WCC, and Median Consensus, are supplied through `bin/` or environment
-variables.
+All method dependencies live under this repository's `externals/` directory.
+DSC and ClusterMerger do not own these CVC-only dependencies. Median Consensus
+is supplied through `bin/` or `PAMCON_BIN` when using `--merge-method medcon`.
 
 ## Installation
 

@@ -23,7 +23,7 @@ stage_timeout="${PIPELINE_TIMEOUT:-5d}"
 methods_set=0
 PYTHON_CMD=("${PYTHON:-python}")
 cluster_merger_bin="${CLUSTER_MERGER_BIN:-${CVC_ROOT}/externals/ClusterMerger/cluster_merger}"
-rtrex_bin="${RTREX_BIN:-${CVC_ROOT}/bin/RTRex}"
+rtrex_bin="${RTREX_BIN:-${CVC_ROOT}/externals/amazon-RTRExtractor/RTRex/clustering/RTRex}"
 wcc_bin="${WCC_BIN:-}"
 pamcon_bin="${PAMCON_BIN:-${CVC_ROOT}/bin/consensus}"
 
@@ -223,8 +223,10 @@ if [[ ! -x "${cluster_merger_bin}" && -x "${CVC_ROOT}/externals/ClusterMerger/bu
 fi
 
 if [[ -z "${wcc_bin}" ]]; then
-    if [[ -x "${CVC_ROOT}/bin/constrained_clustering" ]]; then
-        wcc_bin="${CVC_ROOT}/bin/constrained_clustering"
+    if [[ -x "${CVC_ROOT}/externals/constrained-clustering/build/bin/constrained_clustering" ]]; then
+        wcc_bin="${CVC_ROOT}/externals/constrained-clustering/build/bin/constrained_clustering"
+    elif [[ -x "${CVC_ROOT}/externals/constrained-clustering/constrained_clustering" ]]; then
+        wcc_bin="${CVC_ROOT}/externals/constrained-clustering/constrained_clustering"
     else
         wcc_bin="constrained_clustering"
     fi

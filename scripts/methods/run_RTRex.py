@@ -73,7 +73,12 @@ logging.info(f"[TIME] Loading network and formatting: {elapsed:.4f}s")
 
 start = time.perf_counter()
 
-binary_path = Path(os.environ.get("RTREX_BIN", cvc_root / "bin" / "RTRex")).resolve()
+binary_path = Path(
+    os.environ.get(
+        "RTREX_BIN",
+        cvc_root / "externals" / "amazon-RTRExtractor" / "RTRex" / "clustering" / "RTRex",
+    )
+).resolve()
 output_basename = "com"
 
 if not binary_path.exists():
