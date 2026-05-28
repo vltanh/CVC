@@ -1,0 +1,6 @@
+[submodule "externals/DSC"]
+	path = externals/DSC
+	url = git@github.com:illinois-or-research-analytics/DSC.git
+[submodule "externals/ClusterMerger"]
+	path = externals/ClusterMerger
+	url = git@github.com:illinois-or-research-analytics/ClusterMerger.git

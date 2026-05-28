@@ -1,0 +1,12 @@
+# Local build and run outputs
+bin/
+output/
+examples/output/
+
+# Python
+__pycache__/
+*.pyc
+
+# Native builds
+build/
+*.o
