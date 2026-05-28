@@ -32,19 +32,23 @@ externals/
   constrained-clustering/
 ```
 
-## DSC Methods
+## DSC-Flow-Iter
 
-Build the DSC binaries and copy them into the repository-level `bin/` directory:
+Build only the DSC-Flow-Iter binary needed by this pipeline and copy it into the
+repository-level `bin/` directory:
 
 ```bash
-cd externals/DSC
-bash build.sh
-cd ../..
+cd externals/DSC/src/flow-iter
+make clean
+make
+cd ../../../..
 mkdir -p bin
-cp externals/DSC/bin/* bin/
+cp externals/DSC/src/flow-iter/flow-iter bin/flow-iter
+chmod +x bin/flow-iter
 ```
 
-The pipeline uses `bin/flow-iter` by default for DSC-Flow-Iter.
+The broader `externals/DSC/build.sh` script builds additional DSC binaries that
+are not required for this pipeline.
 
 ## Python Dependencies
 
